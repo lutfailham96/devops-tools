@@ -4,9 +4,13 @@ level_notification=30 # Notification remaining days start from here
 level_warning=14      # send warning start from notification day, until reach danger level
 level_danger=7        # send danger from this days
 level_critical=3      # send critical from this days
-discord_webhook_url="CHANGE_ME"
+discord_webhook_url="UPDATE_ME_TO_YOUR_WEBHOOK_URL"
 
 generate_json() {
+  avatar_url="UPDATE_ME_TO_DIRECT_LINK_OF_JPG_PNG"
+  footer_icon_url="UPDATE_ME_TO_DIRECT_LINK_OF_JPG_PNG"
+  date_time="$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
+  machine_source="$(hostname)"
   domain="${1}"
   days_left="${2}"
   color=0
@@ -14,10 +18,14 @@ generate_json() {
   [[ ${days_left} -le ${level_danger} && ${days_left} -gt ${level_critical} ]] && color=15895301
   [ ${days_left} -le ${level_critical} ] && color=15861768
   output=$(jq -n \
+    --arg av "$avatar_url" \
+    --arg fu "$footer_icon_url" \
     --arg dn "$domain" \
     --arg dl "$days_left days left" \
     --arg cl "$color" \
-    '{ "username": "DevOps Bot", "embeds": [ { "title": "SSL Certificate Alert", "color": $cl, "fields": [ { "name": "Domain", "value": $dn }, { "name": "Remaining expiry days", "value": $dl } ] } ] }')
+    --arg ft "This message was generated from $machine_source" \
+    --arg dt "$date_time" \
+    '{ "username": "DevOps Bot", "avatar_url": $av, "embeds": [ { "title": "SSL Certificate Alert", "description": "Please update ssl certificate configuration to keep the service running properly", "color": $cl, "fields": [ { "name": "Domain", "value": $dn }, { "name": "Remaining expiry days", "value": $dl } ], "footer": { "icon_url": $fu, "text": $ft }, "timestamp": $dt } ] }')
   echo "${output}"
 }
 
