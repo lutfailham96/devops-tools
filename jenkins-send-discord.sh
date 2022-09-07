@@ -7,7 +7,7 @@ if [[ "${jenkins_notification_type}" == "approval" ]]; then
   jenkins_job_status="WAITING_FOR_APPROVAL"
   jenkins_job_url="${jenkins_blue_ocean_base_url}/${jenkins_job_name}/detail/${jenkins_branch_name}/${jenkins_job_number}/pipeline"
 else
-  if [[ "${jenkins_build_result}" == "SUCCESS" ]]; then
+  if [[ "${jenkins_job_status}" == "SUCCESS" ]]; then
     color="65344"
   else
     color="16711701"
