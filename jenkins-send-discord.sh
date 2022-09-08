@@ -1,6 +1,7 @@
 #!/bin/bash
 
 ##### reserved vars #####
+# discord_webhook_url         = https://discord.com/api/webhooks/xxx/xxx
 # avatar_url                  = https://your-awesome-discord-avatar.jpg
 # footer_icon_url             = https://your-awesome-discord-icon-footer.jpg
 # jenkins_branch_name         = develop | release | master
