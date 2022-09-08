@@ -20,10 +20,13 @@
 jenkins_job_name="$(echo ${JOB_NAME} | awk -F / '{print $1}')"
 
 if [ -n "${discord_id}" ]; then
+  #while IFS= read -r user; do
+  #  discord_mention+="<@${user}> "
+  #  #discord_mention="${discord_mention} <@${user}>"
+  #done <<< $(echo "${discord_id}" | sed 's/,/\n/g')
   while IFS= read -r user; do
     discord_mention+="<@${user}> "
-    #discord_mention="${discord_mention} <@${user}>"
-  done <<< $(echo "${discord_id}" | sed 's/,/\n/g')
+  done < <(printf '%s\n' "${discord_id}" | sed 's/,/\n/g')
 fi
 
 if [ "${jenkins_notification_type}" = "approval" ]; then
@@ -86,6 +89,7 @@ send_notification() {
   if [ -n "${discord_mention}" ]; then
     if [ "${jenkins_notification_type}" = "approval" ]; then
       json_data=$(echo ${json_data} | sed "s/\"username\":/\"content\": \"${discord_mention}\", \"username\":/g")
+      #json_data=$(echo ${json_data} | sed "s/\"color\":/\"description\": \"${discord_mention}\", \"color\":/g")
     fi
   fi
   curl \
