@@ -1,5 +1,20 @@
 #!/bin/bash
 
+##### reserved vars #####
+# avatar_url                  = https://your-awesome-discord-avatar.jpg
+# footer_icon_url             = https://your-awesome-discord-icon-footer.jpg
+# jenkins_branch_name         = develop | release | master
+# jenkins_job_name            = my-jenkins-job
+# jenkins_job_status          = SUCCESS | FAILURE | ABORT
+# jenkins_job_number          = 12345
+# jenkins_job_url             = https://my-jenkins-engine/job/my-jenkins-job/job/develop/12345/console
+# jenkins_notification_type   = approval | report
+# jenkins_node_name           = my-jenkins-agent-node
+# jenkins_build_duration      = "10 Minutes and counting"
+# jenkins_changes             = "- Add feature #1\n- Bug fix #1\n- Improvement #2"
+# jenkins_blue_ocean_base_url = https://my-jenkins-engine/blue/organizations/jenkins
+#########################
+
 jenkins_job_name="$(echo ${JOB_NAME} | awk -F / '{print $1}')"
 
 if [ "${jenkins_notification_type}" = "approval" ]; then
