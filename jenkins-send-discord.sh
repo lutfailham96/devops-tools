@@ -14,9 +14,16 @@
 # jenkins_build_duration      = "10 Minutes and counting"
 # jenkins_changes             = "- Add feature #1\n- Bug fix #1\n- Improvement #2"
 # jenkins_blue_ocean_base_url = https://my-jenkins-engine/blue/organizations/jenkins
+# discord_id                  = "12345,54321" # separated by comma
 #########################
 
 jenkins_job_name="$(echo ${JOB_NAME} | awk -F / '{print $1}')"
+
+if [ -n "${discord_id}" ]; then
+  while IFS= read -r user; do
+    discord_mention+="<@${user}> "
+  done <<< $(echo "${discord_id}" | sed -n 1'p' | tr ',' '\n')
+fi
 
 if [ "${jenkins_notification_type}" = "approval" ]; then
   color="43775"
@@ -75,6 +82,11 @@ EOF
 
 send_notification() {
   json_data="${1}"
+  if [ -n "${discord_mention}" ]; then
+    if [ "${jenkins_notification_type}" = "approval" ]; then
+      json_data=$(echo ${json_data} | sed "s/\"username\":/\"content\": \"${discord_mention}\", \"username\":/g")
+    fi
+  fi
   curl \
       -H "Content-Type: application/json" \
       -d "${json_data}" \
