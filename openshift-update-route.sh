@@ -44,7 +44,7 @@ generate_route() {
         | sed '/\]/d' \
         | sed '/\[/d' \
         | sed 's/  //g' \
-        | sed ':a;N;$!ba;s/,\n/ /g' \
+        | sed ':a;N;$!ba;s/,\n/,/g' \
         | sed 's/"//g' \
         | sed 's/null/\//g' \
         | sed ':a;N;$!ba;s/\n\n/\n/g' > ${ROUTE_FILE}
@@ -55,7 +55,7 @@ generate_route() {
         | sed '/\]/d' \
         | sed '/\[/d' \
         | sed 's/  //g' \
-        | sed ':a;N;$!ba;s/,\n/ /g' \
+        | sed ':a;N;$!ba;s/,\n/,/g' \
         | sed 's/"//g' \
         | sed 's/null/\//g' \
         | sed ':a;N;$!ba;s/\n\n/\n/g' \
@@ -67,12 +67,12 @@ generate_route_yml() {
   rm -rf ${RESULT_DIR}
   mkdir -p ${RESULT_DIR}
   while IFS= read -r route; do
-    route_name=$(echo ${route} | awk '{print $1}')
-    route_service=$(echo ${route} | awk '{print $4}')
-    route_domain=$(echo ${route} | awk '{print $2}')
-    route_path=$(echo ${route} | awk '{print $3}')
+    route_name=$(echo ${route} | awk -F , '{print $1}')
+    route_service=$(echo ${route} | awk -F , '{print $4}')
+    route_domain=$(echo ${route} | awk -F , '{print $2}')
+    route_path=$(echo ${route} | awk -F , '{print $3}')
     route_path_esc=$(echo ${route_path} | sed 's/\//\\\//g')
-    route_port=$(echo ${route} | awk '{print $5}')
+    route_port=$(echo ${route} | awk -F , '{print $5}')
     route_file="${RESULT_DIR}/${route_name}-env.yaml"
     echo "Generating yaml: ${route_name}"
     cp -afp ${ROUTE_TMPL} ${route_file}
@@ -87,14 +87,14 @@ generate_route_yml() {
 
 remove_old_route() {
   while IFS= read -r route; do
-    route_name=$(echo ${route} | awk '{print $1}')
+    route_name=$(echo ${route} | awk -F , '{print $1}')
     echo oc delete route ${route_name} -n ${PROJECT}
   done < ${1}
 }
 
 create_new_route() {
   while IFS= read -r route; do
-    route_name=$(echo ${route} | awk '{print $1}')
+    route_name=$(echo ${route} | awk -F , '{print $1}')
     route_file="${RESULT_DIR}/${route_name}-env.yaml"
     echo oc apply -f ${route_file} -n ${PROJECT}
   done < ${1}
@@ -102,7 +102,7 @@ create_new_route() {
 
 update_route() {
   while IFS= read -r route; do
-    route_name=$(echo ${route} | awk '{print $1}')
+    route_name=$(echo ${route} | awk -F , '{print $1}')
     route_file="${RESULT_DIR}/${route_name}-env.yaml"
     echo "Updating route: ${route_name} ..."
     oc delete route ${route_name} -n ${PROJECT} \
@@ -126,3 +126,4 @@ else
     && generate_route_yml ${ROUTE_FILE} \
     && update_route ${ROUTE_FILE}
 fi
+
