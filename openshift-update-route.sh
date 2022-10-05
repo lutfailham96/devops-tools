@@ -59,7 +59,7 @@ generate_route() {
         | sed 's/"//g' \
         | sed 's/null/\//g' \
         | sed ':a;N;$!ba;s/\n\n/\n/g' \
-        | grep ${FILTER} > ${ROUTE_FILE}
+        | grep ${FILTER}, > ${ROUTE_FILE}
   fi
 }
 
